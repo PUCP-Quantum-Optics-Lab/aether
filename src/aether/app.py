@@ -1,4 +1,4 @@
-from lib.rotation_mount import open_serial, move_abs
+from device.rotation_mount import open_serial, move_abs
 
 def main():
     bus = open_serial("COM4")
