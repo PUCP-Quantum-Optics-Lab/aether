@@ -10,7 +10,7 @@ from random import uniform
 
 
 def open_serial(com_port, timeout=None):
-    '''
+    """
     Opens serial port
 
     Parameters
@@ -20,7 +20,7 @@ def open_serial(com_port, timeout=None):
     Returns
     -------
     ser : Serial port object
-    '''
+    """
     ser = serial.Serial(
         port=com_port,
         baudrate=9600,
@@ -33,13 +33,13 @@ def open_serial(com_port, timeout=None):
         dsrdtr=False,
         write_timeout=None,
         inter_byte_timeout=None,
-        exclusive=True
+        exclusive=True,
     )
     return ser
 
 
 def angle_tohexa(angle_degrees):
-    '''
+    """
     Transforms float number into hexa format required by Thorlabs motors
 
     Parameters
@@ -49,16 +49,16 @@ def angle_tohexa(angle_degrees):
     Returns
     -------
     angle_hexa : Hexa string type with length up to 8 bits
-    '''
+    """
     npulses_total = 143360  # equal to int('23000')
-    theta_min = 360/npulses_total
-    npulses = int(floor(angle_degrees/theta_min))
+    theta_min = 360 / npulses_total
+    npulses = int(floor(angle_degrees / theta_min))
     angle_hexa = hex(npulses).upper()  # e.g. 0X23C7
     return angle_hexa
 
 
 def hexa_toangle(hexa_str):
-    '''
+    """
     Retransforms hexa string into float number
 
     Parameters
@@ -68,12 +68,12 @@ def hexa_toangle(hexa_str):
     Returns
     -------
     angle_degree : Number in deegrees as float type
-    '''
+    """
     # print('---')
     # print(hexa_str)
-    if hexa_str != b'\n':
+    if hexa_str != b"\n":
         npulses_total = 143360  # equal to int('23000')
-        angle_degree = int(hexa_str, 16)/npulses_total*360
+        angle_degree = int(hexa_str, 16) / npulses_total * 360
         angle_degree = round(angle_degree, 3)
     else:
         angle_degree = 0.0
@@ -81,7 +81,7 @@ def hexa_toangle(hexa_str):
 
 
 def to8_format(in_str):
-    '''
+    """
     Transforms input string from hexa format into 8 bit representation required
     for Thorlabs motors
 
@@ -92,17 +92,17 @@ def to8_format(in_str):
     Returns
     -------
     format8 : Hexa string with exact length of 8 bits
-    '''
-    reduced_hex = in_str[2:len(in_str)]  # cut first two digits
+    """
+    reduced_hex = in_str[2 : len(in_str)]  # cut first two digits
     if len(reduced_hex) < 7:
         return reduced_hex.zfill(8)
     else:
-        raise ValueError('to8_format Error: input too long')
-        return '00000000'
+        raise ValueError("to8_format Error: input too long")
+        return "00000000"
 
 
 def write_to_device(bus, address, command):
-    '''
+    """
     Uses pySerial to write bytes to the port
 
     Parameters
@@ -115,12 +115,12 @@ def write_to_device(bus, address, command):
     Returns
     -------
     Number of bytes written.
-    '''
+    """
     bus.write(command.encode())  # encode to default utf-8 encoding
 
 
 def get_position(bus, address):
-    '''
+    """
     Read the current position from the respective Thorlabs Rotation Motor
     connected to address on bus
 
@@ -132,19 +132,18 @@ def get_position(bus, address):
     Returns
     -------
     angle : Angle of position in degrees as calculated by hexa_toangle()
-    '''
+    """
 
-    mssg = 'RotationMount.get_position :: Device in address ' + \
-        str(address) + ' '
+    mssg = "RotationMount.get_position :: Device in address " + str(address) + " "
 
-    command = str(address) + 'gp'
+    command = str(address) + "gp"
     write_to_device(bus, address, command)
     line = bus.readline()  # read and return one line from the stream
 
     reply_type = line[1:3]
 
-    if line == b'':
-        print(mssg + 'did not reply')
+    if line == b"":
+        print(mssg + "did not reply")
         return None
 
     hex = line[4:11]  # hexa format, string type, e.g. b'08B7B'
@@ -155,7 +154,7 @@ def get_position(bus, address):
 
 
 def get_info(bus, address):
-    '''
+    """
     Read the information from the respective Thorlabs Rotation Motor
     connected to address on bus
 
@@ -167,8 +166,8 @@ def get_info(bus, address):
     Returns
     -------
     serial : Serial number of the device
-    '''
-    command = str(address) + 'in'
+    """
+    command = str(address) + "in"
     write_to_device(bus, address, command)
     line = bus.readline()  # read and return one line from the stream
     # if line != b'':
@@ -180,7 +179,7 @@ def get_info(bus, address):
 
 
 def get_status(bus, address):
-    '''
+    """
     Read the status from the respective Thorlabs Rotation Motor
     connected to address on bus
 
@@ -192,8 +191,8 @@ def get_status(bus, address):
     Returns
     -------
     status : Status of the device
-    '''
-    command = str(address) + 'gs'
+    """
+    command = str(address) + "gs"
     write_to_device(bus, address, command)
     line = bus.readline()  # read and return one line from the stream
     # e.g. b'0PO00008B7B\r\n', line terminator b'\n' is for binary files
@@ -206,7 +205,7 @@ def get_status(bus, address):
 
 
 def home(bus, address):
-    '''
+    """
     Read the status from the respective Thorlabs Rotation Motor
     connected to address on bus
 
@@ -218,8 +217,8 @@ def home(bus, address):
     Returns
     -------
     status : Status of the device
-    '''
-    command = str(address) + 'ho0'
+    """
+    command = str(address) + "ho0"
     write_to_device(bus, address, command)
     line = bus.readline()  # read and return one line from the stream
     # e.g. b'0PO00008B7B\r\n', line terminator b'\n' is for binary files
@@ -232,7 +231,7 @@ def home(bus, address):
 
 
 def move_abs(bus, address, angle_degrees):
-    '''
+    """
     Move to an absolute positive angle
 
     Parameters
@@ -240,14 +239,14 @@ def move_abs(bus, address, angle_degrees):
     bus     : Serial port object which is returned from open_serial
     address : Positive integer which specifies the bus address of the device
     angle_degrees : Value for absolute positive angle
-    '''
+    """
     # print('move ' + str(address) + ' to:', round(angle_degrees, 2))
-    command = str(address) + 'ma' + to8_format(angle_tohexa(angle_degrees))
+    command = str(address) + "ma" + to8_format(angle_tohexa(angle_degrees))
     write_to_device(bus, address, command)
 
 
 def move_abs_n_hear(bus, address, angle_degrees_in, iterations):
-    '''
+    """
     Move to an absolute positive angle
 
     Parameters
@@ -256,7 +255,7 @@ def move_abs_n_hear(bus, address, angle_degrees_in, iterations):
     address : Positive integer which specifies the bus address of the device
     angle_degrees : Value for absolute positive angle
     iterations: Carry the number of iterations tried (used to avoid inf self calling loop)
-    '''
+    """
     wtime = 2.0
     max_iterations = 10
     # tolerance = 0.02
@@ -264,23 +263,21 @@ def move_abs_n_hear(bus, address, angle_degrees_in, iterations):
     angle_degrees = angle_degrees_in % 360
 
     # add to messages the COM port used, address is not enough to identify
-    mssg = 'RotationMount.move_abs_n_hear :: Device in address ' + \
-        str(address) + ' '
+    mssg = "RotationMount.move_abs_n_hear :: Device in address " + str(address) + " "
 
     # If the current angle is already the target -> do not move and return current angle
     current_ang = get_position(bus, address)
 
     if current_ang != None:
-        if abs(angle_degrees-current_ang) <= tolerance:
+        if abs(angle_degrees - current_ang) <= tolerance:
 
-            print(mssg + "already at target angle interval (" +
-                  str(current_ang) + ")")
+            print(mssg + "already at target angle interval (" + str(current_ang) + ")")
 
             return current_ang
 
     iterations = iterations + 1
     # print('move ' + str(address) + ' to:', round(angle_degrees, 2))
-    command = str(address) + 'ma' + to8_format(angle_tohexa(angle_degrees))
+    command = str(address) + "ma" + to8_format(angle_tohexa(angle_degrees))
     write_to_device(bus, address, command)
 
     time.sleep(0.1)
@@ -289,65 +286,73 @@ def move_abs_n_hear(bus, address, angle_degrees_in, iterations):
 
     time.sleep(0.1)
 
-    line = line.decode('utf-8')
+    line = line.decode("utf-8")
 
     reply_type = line[1:3]
 
-    mssgappend = ' [ Iteration: ' + str(iterations) + ' ]'
+    mssgappend = " [ Iteration: " + str(iterations) + " ]"
 
     if iterations >= max_iterations:
-        print(mssg + 'failed to converge after maximum number of attemps' +
-              mssgappend + ' ERROR')
+        print(
+            mssg
+            + "failed to converge after maximum number of attemps"
+            + mssgappend
+            + " ERROR"
+        )
         return None
-    elif reply_type == 'PO':
+    elif reply_type == "PO":
         hex = line[4:11]
         angle = hexa_toangle(hex)
         angle = angle % 360
-        print(mssg + 'moved to ' + str(angle) +
-              '° (' + line[:-2] + ')' + mssgappend)
-        if abs(angle_degrees-angle) > tolerance:
-            print(mssg + 'did not converge to the angle within the tolerance (' +
-                  str(abs(angle_degrees-angle)) + '>' + str(tolerance) + '°)' + mssgappend)
+        print(mssg + "moved to " + str(angle) + "° (" + line[:-2] + ")" + mssgappend)
+        if abs(angle_degrees - angle) > tolerance:
+            print(
+                mssg
+                + "did not converge to the angle within the tolerance ("
+                + str(abs(angle_degrees - angle))
+                + ">"
+                + str(tolerance)
+                + "°)"
+                + mssgappend
+            )
             # print(mssg + 'is trying a two steps approach' + mssgappend)
-            print(mssg + 'is trying a two steps approach (homing)' + mssgappend)
+            print(mssg + "is trying a two steps approach (homing)" + mssgappend)
             time.sleep(wtime)
             # move_abs(bus, address, (angle_degrees +
             #          uniform(0.001, tolerance)) % 360)
             home(bus, address)
-            #move_abs(bus, address, uniform(10, 350))
+            # move_abs(bus, address, uniform(10, 350))
             time.sleep(wtime)
             angle = move_abs_n_hear(bus, address, angle_degrees, iterations)
             return angle
         else:
             return angle
-    elif reply_type == 'GS':
-        print(mssg + 'replied error: ' + line[:-2] + mssgappend)
-        print(mssg + 'is trying a two steps approach' + mssgappend)
+    elif reply_type == "GS":
+        print(mssg + "replied error: " + line[:-2] + mssgappend)
+        print(mssg + "is trying a two steps approach" + mssgappend)
         time.sleep(wtime)
-        #move_abs(bus, address, (angle_degrees + uniform(0.5 , 2.0)) % 360 )
-        move_abs(bus, address, (angle_degrees +
-                 uniform(0.001, tolerance)) % 360)
-        #move_abs(bus, address, uniform(10, 350))
+        # move_abs(bus, address, (angle_degrees + uniform(0.5 , 2.0)) % 360 )
+        move_abs(bus, address, (angle_degrees + uniform(0.001, tolerance)) % 360)
+        # move_abs(bus, address, uniform(10, 350))
         time.sleep(wtime)
         angle = move_abs_n_hear(bus, address, angle_degrees, iterations)
         return angle
-    elif reply_type == '':
-        print(mssg + 'did not reply' + mssgappend)
+    elif reply_type == "":
+        print(mssg + "did not reply" + mssgappend)
         time.sleep(wtime)
-        print(mssg + 'is trying a two steps approach' + mssgappend)
-        move_abs(bus, address, (angle_degrees +
-                 uniform(0.001, tolerance)) % 360)
-        #move_abs(bus, address, uniform(10, 350))
+        print(mssg + "is trying a two steps approach" + mssgappend)
+        move_abs(bus, address, (angle_degrees + uniform(0.001, tolerance)) % 360)
+        # move_abs(bus, address, uniform(10, 350))
         time.sleep(wtime)
         angle = move_abs_n_hear(bus, address, angle_degrees, iterations)
         return angle
     else:
         time.sleep(wtime)
-        print(mssg + 'replied unknown message: ' + reply_type + mssgappend)
+        print(mssg + "replied unknown message: " + reply_type + mssgappend)
 
 
 def move_fw(bus, address, angle_degrees):
-    '''
+    """
     Rotate in forward direction to a relative angle
 
     Parameters
@@ -355,15 +360,15 @@ def move_fw(bus, address, angle_degrees):
     bus     : Serial port object which is returned from open_serial
     address : Positive integer which specifies the bus address of the device
     angle_degrees : Positive integer value for relative angle (fw)
-    '''
-    print('move ' + str(address) + ' fw: ', round(angle_degrees, 2))
-    command = str(address) + 'sj' + to8_format(angle_tohexa(angle_degrees))
+    """
+    print("move " + str(address) + " fw: ", round(angle_degrees, 2))
+    command = str(address) + "sj" + to8_format(angle_tohexa(angle_degrees))
     write_to_device(bus, address, command)
-    write_to_device(bus, address, str(address) + 'fw')
+    write_to_device(bus, address, str(address) + "fw")
 
 
 def move_bw(bus, address, angle_degrees):
-    '''
+    """
     Rotate in forward direction to a relative angle
 
     Parameters
@@ -371,15 +376,15 @@ def move_bw(bus, address, angle_degrees):
     bus     : Serial port object which is returned from open_serial
     address : Positive integer which specifies the bus address of the device
     angle_degrees : Positive integer value for relative angle (bw)
-    '''
-    print('move ' + str(address) + ' bw: ', round(angle_degrees, 2))
-    command = str(address) + 'sj' + to8_format(angle_tohexa(angle_degrees))
+    """
+    print("move " + str(address) + " bw: ", round(angle_degrees, 2))
+    command = str(address) + "sj" + to8_format(angle_tohexa(angle_degrees))
     write_to_device(bus, address, command)
-    write_to_device(bus, address, str(address) + 'bw')
+    write_to_device(bus, address, str(address) + "bw")
 
 
 def set_offset(bus, address, angle_degrees):
-    '''
+    """
     Set home angle for respective Thorlabs Motor connected to address on bus
 
     WARNING: Always write factory offset before changing its value
@@ -393,14 +398,14 @@ def set_offset(bus, address, angle_degrees):
     Returns
     -------
     ???
-    '''
-    print('set home offset ' + str(address) + ' to ' + str(angle_degrees))
-    command = str(address) + 'so' + to8_format(angle_tohexa(angle_degrees))
+    """
+    print("set home offset " + str(address) + " to " + str(angle_degrees))
+    command = str(address) + "so" + to8_format(angle_tohexa(angle_degrees))
     write_to_device(bus, address, command)
 
 
 def get_offset(bus, address):
-    '''
+    """
     Read the offset setting from the respective Thorlabs Rotation Motor
     connected to address on bus
 
@@ -412,8 +417,8 @@ def get_offset(bus, address):
     Returns
     -------
     angle : Angle of position in degrees as calculated by hexa_toangle()
-    '''
-    command = str(address) + 'go'
+    """
+    command = str(address) + "go"
     write_to_device(bus, address, command)
     line = bus.readline()  # e.g b'0HO00001755\r\n'
     hex = line[4:11]
@@ -422,7 +427,7 @@ def get_offset(bus, address):
 
 
 def goto_offset(bus, address):  # homes motor clockwise
-    '''
+    """
     Moves respective Thorlabs Motor to home position
 
     Parameters
@@ -430,7 +435,7 @@ def goto_offset(bus, address):  # homes motor clockwise
     bus     : Serial port object which is returned from open_serial
     address : Positive integer which specifies the bus address of the device
     angle_degrees : Value for absolute positive angle
-    '''
-    print('homing ' + str(address))
-    command = str(address) + 'ho1'
+    """
+    print("homing " + str(address))
+    command = str(address) + "ho1"
     write_to_device(bus, address, command)  # 'ho0' clockwise, 'ho1' counter

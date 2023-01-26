@@ -1,10 +1,8 @@
 from setuptools import setup, find_packages
 
-requires = [
-    "pyserial"
-]
+requires = ["pyserial"]
 
-requires_dev = []
+requires_dev = ["black"]
 
 requires_test = []
 

@@ -9,5 +9,5 @@ In the project directory run the following.
 ```
 python -m venv venv
 source ./venv/bin/activate
-pip install -e .
+pip install -e .[dev]
 ```
