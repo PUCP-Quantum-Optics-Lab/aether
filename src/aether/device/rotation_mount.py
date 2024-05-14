@@ -409,7 +409,7 @@ def get_offset(bus, address):
     Read the offset setting from the respective Thorlabs Rotation Motor
     connected to address on bus
 
-    Parameters
+    ParametersRotation
     ----------
     bus     : Serial port object which is returned from open_serial
     address : Positive integer which specifies the bus address of the device

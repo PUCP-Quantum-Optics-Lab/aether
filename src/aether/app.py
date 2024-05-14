@@ -1,10 +1,21 @@
-from device.rotation_mount import open_serial, move_abs
+from device.rotation_mount_a import RotationMount
 
 
 def main():
-    bus = open_serial("COM4")
-    move_abs(bus, 1, 18)
-    bus.close()
+    coincidence_files = [
+        { name: "", last_line: 0},
+        { name: "", last_line: 0},
+    ]
+    for cf in coincidence_files:
+        with open(cf, , encoding="utf-8") as f:
+            lines = f.readlines()
+            cf["last_line"] = len(lines)
+            
+
+    mount = RotationMount("/dev/ttyUSB0", "0")
+    info = mount.get_position()
+    print(info)
+    mount.close()
 
 
 if __name__ == "__main__":

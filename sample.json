@@ -1,0 +1,11 @@
+[
+  {
+    "measurement_time": "10",
+    "devices": [
+      {
+        "id": "0",
+        "angles": [10, 20, 30]
+      }
+    ]
+  }
+]

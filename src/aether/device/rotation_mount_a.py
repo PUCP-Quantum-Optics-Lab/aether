@@ -24,11 +24,13 @@ class RotationMount:
         )
     
     def _write_serial(self, command: str) -> None:
+        print(f"{self.address}{command}")
         self.serial.write(f"{self.address}{command}".encode())
 
     def get_information(self) -> DeviceInformation:
         self._write_serial("in")
-        response = self.serial.read(33)
+        response = self.serial.readline()
+        print(response)
         return DeviceInformation(
             bi_positional_slider=response[3:5].decode("ascii"),
             serial_number=response[5:13].decode("ascii"),
@@ -42,4 +44,8 @@ class RotationMount:
     def get_position(self) -> int:
         self._write_serial("gp")
         response = self.serial.read(10)
+        print(response)
         return 
+
+    def close(self) -> None:
+        self.serial.close()
