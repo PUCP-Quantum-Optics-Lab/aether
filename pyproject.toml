@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "aether"
+version = "0.1.0"
+description = "Project for controlling components of a quantum optics experiment table."
+authors = ["Josue Villasante <josue.villasante@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pyserial = "^3.5"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.4.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

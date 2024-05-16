@@ -1,10 +1,19 @@
 [
   {
-    "measurement_time": "10",
+    "name": "test_1",
+    "measurement_time": 2,
     "devices": [
       {
-        "id": "0",
+        "address": "0",
         "angles": [10, 20, 30]
+      },
+      {
+        "address": "1",
+        "angles": [11, 21, 31]
+      },
+      {
+        "address": "2",
+        "angles": [12, 22, 32]
       }
     ]
   }
