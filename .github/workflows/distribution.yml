@@ -3,7 +3,7 @@ name: Project windows distribution
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   distribution:
