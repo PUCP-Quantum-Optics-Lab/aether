@@ -1,0 +1,38 @@
+{
+  "coincidence_files": [
+    "c_ab.log"
+  ],
+  "port": "/dev/ttyS0",
+  "experiments": [
+    {
+      "name": "test_1",
+      "measurement_time": 2,
+      "devices": [
+        {
+          "address": "0",
+          "angles": [
+            10,
+            20,
+            30
+          ]
+        },
+        {
+          "address": "1",
+          "angles": [
+            11,
+            21,
+            31
+          ]
+        },
+        {
+          "address": "2",
+          "angles": [
+            12,
+            22,
+            32
+          ]
+        }
+      ]
+    }
+  ]
+}

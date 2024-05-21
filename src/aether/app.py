@@ -9,6 +9,7 @@ from typing import Dict
 from device import RotationMount, RotationMountCache
 from measurement import DeviceAtMeasurement, Measurement, MeasurementValues
 
+
 @dataclass
 class CoincidenceFile:
     name: str
@@ -22,18 +23,18 @@ def main():
         level=logging.INFO,
     )
 
-    coincidence_files: list[CoincidenceFile] = [
-        CoincidenceFile(name="./c_ab", last_line=0),
-    ]
-
-    with open("./sample.json", encoding="utf-8") as f:
+    with open("./config.json", encoding="utf-8") as f:
         config = load(f)
 
-    cache = RotationMountCache("/dev/ttyS0")
+    coincidence_files: list[CoincidenceFile] = [
+        CoincidenceFile(name=f, last_line=0) for f in config["coincidence_files"]
+    ]
+
+    cache = RotationMountCache(config["port"])
 
     measures: list[Measurement] = []
 
-    for exp in config:
+    for exp in config["experiments"]:
         a_len = set([len(d["angles"]) for d in exp["devices"]])
         if len(a_len) != 1:
             raise Exception(
@@ -55,8 +56,8 @@ def main():
                 )
                 measurement.devices.append(device_at_measurement)
                 mount = cache.get(device_at_measurement.address)
-                mount.mock(device_at_measurement.angle)
-                # mount.ensure_move(device_at_measurement.angle)
+                # mount.mock(device_at_measurement.angle)
+                mount.ensure_move(device_at_measurement.angle)
 
             for cf in coincidence_files:
                 with open(cf.name, encoding="utf-8") as f:
@@ -70,7 +71,7 @@ def main():
                 with open(cf.name, encoding="utf-8") as f:
                     lines = f.readlines()
                     measurement_value = MeasurementValues(
-                        code=cf.name, values=lines[cf.last_line:]
+                        code=cf.name, values=lines[cf.last_line :]
                     )
 
                 measurement.values.append(measurement_value)
