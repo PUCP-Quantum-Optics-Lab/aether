@@ -17,3 +17,9 @@ jobs:
           python-version: '3.11'
       - name: Poetry install
         run: curl -sSL https://install.python-poetry.org | python3 -
+      - name: Update PATH
+        run: set PATH=%PATH%;C:\Users\runneradmin\AppData\Roaming\Python\Scripts
+      - name: Poetry install
+        run: poetry install
+      - name: Create distribution
+        run: pyinstaller src/aether/app.py
