@@ -22,4 +22,4 @@ jobs:
       - name: Install dependencies
         run: poetry install
       - name: Create distribution
-        run: poetry run dist
+        run: poetry run pyinstaller src/aether/app.py
