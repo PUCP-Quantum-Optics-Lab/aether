@@ -17,9 +17,11 @@ jobs:
           python-version: '3.11'
       - name: Poetry install
         run: pip install poetry
-      # - name: Update PATH
-      #   run: set PATH=%PATH%;C:\Users\runneradmin\AppData\Roaming\Python\Scripts\
       - name: Install dependencies
         run: poetry install
       - name: Create distribution
         run: poetry run pyinstaller src/aether/app.py
+      - name: Save artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          path: build/
