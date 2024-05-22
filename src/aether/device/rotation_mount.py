@@ -29,7 +29,7 @@ class RotationMount:
             dsrdtr=False,
             write_timeout=None,
             inter_byte_timeout=None,
-            exclusive=True,
+            exclusive=False,
         )
 
     def _angle_to_position(self, angle: int) -> str:
@@ -52,7 +52,9 @@ class RotationMount:
 
     def send(self, command: str) -> bytes:
         self.serial.write(f"{self.address}{command}".encode())
-        return self.serial.readline()
+        r = self.serial.readline()
+        # print(f"Result -> {r}")
+        return r
 
     def get_information(self) -> DeviceInformation:
         response = self.send("in")
@@ -83,12 +85,17 @@ class RotationMount:
         return self._position_to_angle(position)
 
     def home(self, clockwise: bool = True) -> Union[DeviceStatus, int]:
-        res = self.send("ho")
+        res = self.send("ho0")
         return self._handle_move(res)
 
     def move_absolute(self, angle: int) -> Union[DeviceStatus, int]:
         pos = self._angle_to_position(angle).zfill(8)
         res = self.send(f"ma{pos}")
+        return self._handle_move(res)
+
+    def move_relative(self, angle: int) -> Union[DeviceStatus, int]:
+        pos = self._angle_to_position(angle).zfill(8)
+        res = self.send(f"mr{pos}")
         return self._handle_move(res)
 
     def mock(self, angle: int):
