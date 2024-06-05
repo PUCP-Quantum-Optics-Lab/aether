@@ -2,6 +2,7 @@ import logging
 from dataclasses import dataclass
 from datetime import datetime
 from json import dump, load
+from pathlib import Path
 from logging import FileHandler, StreamHandler
 from time import sleep
 from typing import Dict
@@ -23,7 +24,8 @@ def main():
         level=logging.INFO,
     )
 
-    with open("./config.json", encoding="utf-8") as f:
+
+    with Path("config.json").open() as f:
         config = load(f)
 
     coincidence_files: list[CoincidenceFile] = [
