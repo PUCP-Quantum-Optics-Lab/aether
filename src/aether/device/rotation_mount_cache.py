@@ -23,7 +23,7 @@ class RotationMountCache:
             dsrdtr=False,
             write_timeout=None,
             inter_byte_timeout=None,
-            exclusive=False,
+            exclusive=True,
         )
 
     def get(self, device_id: str) -> RotationMount:
