@@ -67,7 +67,7 @@ def main():
                 # mount.ensure_move(device_at_measurement.angle)
 
             for cf in coincidence_files:
-                with open(cf.name, encoding="utf-8") as f:
+                with Path(cf.name).open(encoding="utf-8") as f:
                     lines = f.readlines()
                     cf.last_line = len(lines)
 
@@ -75,7 +75,7 @@ def main():
             sleep(exp["measurement_time"])
 
             for cf in coincidence_files:
-                with open(cf.name, encoding="utf-8") as f:
+                with Path(cf.name).open(encoding="utf-8") as f:
                     lines = f.readlines()
                     measurement_value = MeasurementValues(
                         code=cf.name, values=lines[cf.last_line :]
@@ -89,7 +89,7 @@ def main():
 
     cache.close_all()
 
-    with open("./measurements.json", "w") as f:
+    with Path("./measurements.json").open(mode="w") as f:
         dump([m.json() for m in measures], f, indent="  ")
 
 
