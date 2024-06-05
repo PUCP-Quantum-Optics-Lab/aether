@@ -2,13 +2,17 @@ import logging
 from dataclasses import dataclass
 from datetime import datetime
 from json import dump, load
-from pathlib import Path
 from logging import FileHandler, StreamHandler
+from pathlib import Path
 from time import sleep
 from typing import Dict
 
+from serial.tools.list_ports import comports
+
 from aether.device import RotationMount, RotationMountCache
 from aether.measurement import DeviceAtMeasurement, Measurement, MeasurementValues
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -24,6 +28,7 @@ def main():
         level=logging.INFO,
     )
 
+    logger.info("Available ports %s", [p.device for p in comports()])
 
     with Path("config.json").open() as f:
         config = load(f)
