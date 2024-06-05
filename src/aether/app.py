@@ -6,8 +6,8 @@ from logging import FileHandler, StreamHandler
 from time import sleep
 from typing import Dict
 
-from device import RotationMount, RotationMountCache
-from measurement import DeviceAtMeasurement, Measurement, MeasurementValues
+from aether.device import RotationMount, RotationMountCache
+from aether.measurement import DeviceAtMeasurement, Measurement, MeasurementValues
 
 
 @dataclass
@@ -56,8 +56,8 @@ def main():
                 )
                 measurement.devices.append(device_at_measurement)
                 mount = cache.get(device_at_measurement.address)
-                # mount.mock(device_at_measurement.angle)
-                mount.ensure_move(device_at_measurement.angle)
+                mount.mock(device_at_measurement.angle)
+                # mount.ensure_move(device_at_measurement.angle)
 
             for cf in coincidence_files:
                 with open(cf.name, encoding="utf-8") as f:

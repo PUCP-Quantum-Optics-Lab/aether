@@ -1,9 +1,11 @@
-from serial import Serial, EIGHTBITS, PARITY_NONE, STOPBITS_ONE
-from aether.device.responses import DeviceInformation, DeviceStatus
-from aether.device.error import DeviceError
-from typing import Union
 from logging import getLogger
 from time import sleep
+from typing import Union
+
+from serial import Serial
+
+from aether.device.error import DeviceError
+from aether.device.responses import DeviceInformation, DeviceStatus
 
 logger = getLogger(__name__)
 
@@ -15,22 +17,9 @@ class RotationMount:
     serial: Serial
     address: str
 
-    def __init__(self, port: str, address: str = "0", timeout: float = None):
+    def __init__(self, serial: Serial, address: str = "0"):
         self.address = address
-        self.serial = Serial(
-            port=port,
-            baudrate=9600,
-            bytesize=EIGHTBITS,
-            parity=PARITY_NONE,
-            stopbits=STOPBITS_ONE,
-            timeout=timeout,
-            xonxoff=False,
-            rtscts=False,
-            dsrdtr=False,
-            write_timeout=None,
-            inter_byte_timeout=None,
-            exclusive=False,
-        )
+        self.serial = serial
 
     def _angle_to_position(self, angle: int) -> str:
         return f"{int(angle / 360 * ENCODER_RESOLUTION):x}".upper()
