@@ -63,8 +63,8 @@ def main():
                 )
                 measurement.devices.append(device_at_measurement)
                 mount = cache.get(device_at_measurement.address)
-                mount.mock(device_at_measurement.angle)
-                # mount.ensure_move(device_at_measurement.angle)
+                # mount.mock(device_at_measurement.angle)
+                mount.ensure_move(device_at_measurement.angle)
 
             for cf in coincidence_files:
                 with Path(cf.name).open(encoding="utf-8") as f:
