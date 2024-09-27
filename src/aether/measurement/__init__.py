@@ -4,11 +4,12 @@ from dataclasses import dataclass
 
 @dataclass
 class DeviceAtMeasurement:
+    port_id: str
     address: str
     angle: int
 
     def json(self) -> dict:
-        return {"address": self.address, "angle": self.angle}
+        return {"port_id": self.port_id, "address": self.address, "angle": self.angle}
 
 
 @dataclass

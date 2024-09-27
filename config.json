@@ -2,13 +2,23 @@
   "coincidence_files": [
     "c_ab.log"
   ],
-  "port": "/dev/ttyS0",
+  "ports": [
+    {
+      "id": "0",
+      "port": "/dev/ttyS0"
+    },
+    {
+      "id": "1",
+      "port": "/dev/ttyS1"
+    }
+  ],
   "experiments": [
     {
       "name": "test_1",
       "measurement_time": 2,
       "devices": [
         {
+          "port_id": "0",
           "address": "0",
           "angles": [
             10,
@@ -17,6 +27,7 @@
           ]
         },
         {
+          "port_id": "0",
           "address": "1",
           "angles": [
             11,
@@ -25,6 +36,7 @@
           ]
         },
         {
+          "port_id": "0",
           "address": "2",
           "angles": [
             12,

@@ -1,24 +1,15 @@
 import logging
-from dataclasses import dataclass
-from datetime import datetime
 from json import dump, load
 from logging import FileHandler, StreamHandler
 from pathlib import Path
-from time import sleep
-from typing import Dict
+from configparser import ConfigParser
+from requests import get
 
 from serial.tools.list_ports import comports
 
-from aether.device import RotationMount, RotationMountCache
-from aether.measurement import DeviceAtMeasurement, Measurement, MeasurementValues
+from aether.job import execute_job
 
 logger = logging.getLogger(__name__)
-
-
-@dataclass
-class CoincidenceFile:
-    name: str
-    last_line: int
 
 
 def main():
@@ -30,67 +21,21 @@ def main():
 
     logger.info("Available ports %s", [p.device for p in comports()])
 
-    with Path("config.json").open() as f:
-        config = load(f)
+    config_ini = ConfigParser()
+    config_ini.read("config.ini")
 
-    coincidence_files: list[CoincidenceFile] = [
-        CoincidenceFile(name=f, last_line=0) for f in config["coincidence_files"]
-    ]
+    if config_ini["DEFAULT"]["env"] == "test":
+        with Path("config.json").open() as f:
+            config = load(f)
 
-    cache = RotationMountCache(config["port"])
+        measures = execute_job(config)
 
-    measures: list[Measurement] = []
-
-    for exp in config["experiments"]:
-        a_len = set([len(d["angles"]) for d in exp["devices"]])
-        if len(a_len) != 1:
-            raise Exception(
-                f"Angles on experiment {exp['name']} are not all the same length."
-            )
-
-        for i in range(len(exp["devices"][0]["angles"])):
-            measurement = Measurement(
-                code=exp["name"],
-                devices=[],
-                start_time=datetime.now(),
-                end_time=datetime.now(),
-                values=[],
-            )
-
-            for device in exp["devices"]:
-                device_at_measurement = DeviceAtMeasurement(
-                    address=device["address"], angle=device["angles"][i]
-                )
-                measurement.devices.append(device_at_measurement)
-                mount = cache.get(device_at_measurement.address)
-                # mount.mock(device_at_measurement.angle)
-                mount.ensure_move(device_at_measurement.angle)
-
-            for cf in coincidence_files:
-                with Path(cf.name).open(encoding="utf-8") as f:
-                    lines = f.readlines()
-                    cf.last_line = len(lines)
-
-            measurement.start_time = datetime.now()
-            sleep(exp["measurement_time"])
-
-            for cf in coincidence_files:
-                with Path(cf.name).open(encoding="utf-8") as f:
-                    lines = f.readlines()
-                    measurement_value = MeasurementValues(
-                        code=cf.name, values=lines[cf.last_line :]
-                    )
-
-                measurement.values.append(measurement_value)
-
-            measurement.end_time = datetime.now()
-
-            measures.append(measurement)
-
-    cache.close_all()
-
-    with Path("./measurements.json").open(mode="w") as f:
-        dump([m.json() for m in measures], f, indent="  ")
+        logger.info("Saving measurements.")
+        with Path("./measurements.json").open(mode="w") as f:
+            dump([m.json() for m in measures], f, indent="  ")
+    else:
+        r = get(f"{config_ini['DEFAULT']['api_url']}/job/queue")
+        print(r.status_code)
 
 
 if __name__ == "__main__":
